@@ -18,5 +18,20 @@ jobs:
         with:
           go-version: "1.23.0"
 
-      - name: Build app
+      - name: Run buildprod script
         run: ./scripts/buildprod.sh
+
+      - name: Login to yandex Container Registry
+        uses: yc-actions/yc-cr-login@v3
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+
+      - name: Build,tag, and push Docker image
+        env: 
+          CR_REGISTRY_ID: crpjsddam5er024ghlve
+          CR_REPOSITORY: notely-ar-repo
+          IMAGE_NAME: notely
+          IMAGE_TAG: ${{ github.sha}}
+        run: 
+          docker build -t cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG .
+          docker push cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
