@@ -31,7 +31,24 @@ jobs:
           CR_REGISTRY_ID: crpjsddam5er024ghlve
           CR_REPOSITORY: notely-ar-repo
           IMAGE_NAME: notely
-          IMAGE_TAG: ${{ github.sha}}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Deploy to Serverless Containers
+        uses: yc-actions/yc-sls-container-deploy@v4
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          container-name: notely
+          folder-id: ${{ secrets.YC_FOLDER_ID }}  # Используйте secret с вашим folder ID
+          revision-service-account-id: ${{ secrets.YC_SERVICE_ACCOUNT_ID }}  # ID сервисного аккаунта для ревизии
+          revision-cores: 1
+          revision-memory: 128MB
+          revision-core-fraction: 100
+          revision-concurrency: 1
+          revision-image-url: cr.yandex/${{ env.CR_REGISTRY_ID }}/${{ env.CR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          revision-execution-timeout: 60  # В секундах
+          # Если нужны переменные окружения или секреты, добавьте:
+          # revision-secrets: |
+          #   PORT=80
