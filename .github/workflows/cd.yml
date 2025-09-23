@@ -12,6 +12,7 @@ jobs:
       CR_REGISTRY_ID: crpjsddam5er024ghlve
       CR_REPOSITORY: notely-ar-repo
       IMAGE_NAME: notely
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps: 
       - name: Check out code
@@ -21,6 +22,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.23.0"
+
+      - name: Install goose
+        run: go install github.com/pressly/goose/v3/cmd/goose@latest
 
       - name: Run buildprod script
         run: ./scripts/buildprod.sh
@@ -36,6 +40,9 @@ jobs:
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           docker build -t cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG .
           docker push cr.yandex/$CR_REGISTRY_ID/$CR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Run migration
+        run: ./scripts/migrateup.sh
 
       - name: Deploy to Serverless Containers
         uses: yc-actions/yc-sls-container-deploy@v4
