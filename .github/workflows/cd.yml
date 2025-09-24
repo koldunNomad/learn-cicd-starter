@@ -57,4 +57,4 @@ jobs:
           revision-concurrency: 1
           revision-image-url: cr.yandex/${{ env.CR_REGISTRY_ID }}/${{ env.CR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           revision-execution-timeout: 60  # В секундах
-          revision-secrets: DATABASE_URL=notely_db_password,DATABASE_URL,latest
+          revision-secrets: DATABASE_URL=e6q2vn6vdh7e658m05k8/latest/DATABASE_URL
