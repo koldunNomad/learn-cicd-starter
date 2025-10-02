@@ -9,7 +9,7 @@ import (
 
 var ErrNoAuthHeaderIncluded = errors.New("no authorization header included")
 
-func GetAPIKey(r *http.Request) (string, error) {  // Изменение: аргумент *http.Request вместо http.Header
+func GetAPIKey(r *http.Request) (string, error) { // Изменение: аргумент *http.Request вместо http.Header
 	log.Printf("Full headers received: %v", r.Header)
 	authHeader := r.Header.Get("Authorization")
 	log.Printf("Authorization header raw: %s", authHeader)

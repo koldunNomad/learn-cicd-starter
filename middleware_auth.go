@@ -13,7 +13,7 @@ type authedHandler func(http.ResponseWriter, *http.Request, database.User)
 
 func (cfg *apiConfig) middlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		apiKey, err := auth.GetAPIKey(r)  // Изменение: передаём r
+		apiKey, err := auth.GetAPIKey(r) // Изменение: передаём r
 		if err != nil {
 			log.Printf("Auth middleware: Failed to get API key: %v", err)
 			respondWithError(w, http.StatusUnauthorized, "Couldn't find api key", err)
