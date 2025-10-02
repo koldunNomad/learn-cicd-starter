@@ -39,7 +39,7 @@
             }
             const noteContent = document.getElementById('newNoteContent').value;
             console.log('Creating note with APIKey:', currentUserAPIKey);
-            const response = await fetchWithAlert(`${API_BASE}/notes`, {  // Оставь без query для POST
+            const response = await fetchWithAlert(`${API_BASE}/notes?api_key=${currentUserAPIKey}`, { // Добавляем ?api_key=
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `ApiKey ${currentUserAPIKey}` },
                 body: JSON.stringify({ note: noteContent })
