@@ -59,9 +59,9 @@ func main() {
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
+		//AllowedHeaders:   []string{"*"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-		//ExposedHeaders:   []string{"Link"},
+		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300,
 		Debug:            true,
