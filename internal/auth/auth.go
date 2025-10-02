@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-var ErrNoAuthHeaderIncluded = errors.New("no authorization header included")
+var ErrNoAuthHeaderIncluded = errors.New("no authorization header or query param included") // Обновлённый текст ошибки
 
-func GetAPIKey(r *http.Request) (string, error) { // Изменение: аргумент *http.Request вместо http.Header
+func GetAPIKey(r *http.Request) (string, error) {
 	log.Printf("Full headers received: %v", r.Header)
 	authHeader := r.Header.Get("Authorization")
 	log.Printf("Authorization header raw: %s", authHeader)
