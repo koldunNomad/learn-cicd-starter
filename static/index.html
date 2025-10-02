@@ -33,10 +33,12 @@
 
         async function createNote() {
             if (!currentUser) {
+                console.log('No current user, cannot create note');
                 alert('Please create a user first');
                 return;
             }
             const noteContent = document.getElementById('newNoteContent').value;
+            console.log('Creating note with APIKey:', currentUserAPIKey);
             const response = await fetchWithAlert(`${API_BASE}/notes`,
                 {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `ApiKey ${currentUserAPIKey}` },
@@ -47,14 +49,23 @@
         }
 
         async function getUser() {
+            if (!currentUserAPIKey) {
+                console.log('No API key, skipping getUser');
+            }
+            console.log('Fetching user with APIKey:', currentUserAPIKey);
             const response = await fetchWithAlert(`${API_BASE}/users`, { headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` } });
+            if (!response) {
+                console.log('No valid response from getUser');
+            }
             return await response.json();
         }
 
         async function loadNotes() {
             if (!currentUser) {
+                console.log('No current user, skipping loadNotes');
                 return;
             }
+            console.log('Loading notes with APIKey:', currentUserAPIKey);
             const response = await fetchWithAlert(`${API_BASE}/notes`, { headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` } });
             const notes = await response.json();
             const notesContainer = document.getElementById('notes');
@@ -71,6 +82,7 @@
 
         async function createUser() {
             const nameField = document.getElementById('nameField');
+            console.log('Creating user with name:', nameField.value);
             const response = await fetchWithAlert(`${API_BASE}/users`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -98,9 +110,16 @@
         async function login() {
             currentUserAPIKey = localStorage.getItem('currentUserAPIKey')
             if (!currentUserAPIKey) {
+                console.log('No API key in localStorage, staying logged out');
                 return;
             }
+            console.log('Logging in with APIKey:', currentUserAPIKey);
             const user = await getUser();
+            if (!user) {
+                console.log('Failed to get user, clearing API key');
+                localStorage.removeItem('currentUserAPIKey');
+                return;
+            }
             currentUser = user;
             currentUserAPIKey = user.api_key;
             await loadNotes();
