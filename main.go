@@ -63,6 +63,7 @@ func main() {
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300,
+		Debug:            true,
 	}))
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
