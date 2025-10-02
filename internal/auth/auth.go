@@ -2,9 +2,9 @@ package auth
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strings"
-	"log"
 )
 
 var ErrNoAuthHeaderIncluded = errors.New("no authorization header included")
