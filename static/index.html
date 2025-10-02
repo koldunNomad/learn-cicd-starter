@@ -39,11 +39,12 @@
             }
             const noteContent = document.getElementById('newNoteContent').value;
             console.log('Creating note with APIKey:', currentUserAPIKey);
-            const response = await fetchWithAlert(`${API_BASE}/notes`,
-                {
-                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `ApiKey ${currentUserAPIKey}` },
-                    body: JSON.stringify({ note: noteContent })
-                });
+            const response = await fetchWithAlert(`${API_BASE}/notes`, {  // Оставь без query для POST
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `ApiKey ${currentUserAPIKey}` },
+                body: JSON.stringify({ note: noteContent })
+            });
+            if (!response) return;
             const note = await response.json();
             displayNote(note);
         }
@@ -51,13 +52,19 @@
         async function getUser() {
             if (!currentUserAPIKey) {
                 console.log('No API key, skipping getUser');
+                return null;
             }
             console.log('Fetching user with APIKey:', currentUserAPIKey);
-            const response = await fetchWithAlert(`${API_BASE}/users`, { headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` } });
+            const response = await fetchWithAlert(`${API_BASE}/users?api_key=${currentUserAPIKey}`, {  // Добавь ?api_key= для GET
+                headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` }  // Сохрани заголовок как fallback
+            });
             if (!response) {
                 console.log('No valid response from getUser');
+                return null;
             }
-            return await response.json();
+            const data = await response.json();
+            console.log('getUser response:', data);
+            return data;
         }
 
         async function loadNotes() {
@@ -66,7 +73,10 @@
                 return;
             }
             console.log('Loading notes with APIKey:', currentUserAPIKey);
-            const response = await fetchWithAlert(`${API_BASE}/notes`, { headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` } });
+            const response = await fetchWithAlert(`${API_BASE}/notes?api_key=${currentUserAPIKey}`, {  // Добавь ?api_key= для GET notes
+                headers: { 'Authorization': `ApiKey ${currentUserAPIKey}` }  // Сохрани заголовок
+            });
+            if (!response) return;
             const notes = await response.json();
             const notesContainer = document.getElementById('notes');
             notesContainer.innerHTML = '';
@@ -133,14 +143,24 @@
         }
 
         async function fetchWithAlert(url, options) {
-            const response = await fetch(url, options);
-            if (response.status > 299) {
-                alert(`Error: ${response.status}`);
-                return;
+            console.log('Fetching:', url, 'with headers:', options && options.headers ? options.headers : 'no headers');
+            try {
+                const response = await fetch(url, options);
+                if (!response) {
+                    console.error('Fetch failed, no response for', url);
+                    return null;
+                }
+                if (response.status > 299) {
+                    const errorText = await response.text();
+                    console.log(`Error: ${response.status} on ${url}, response:`, errorText);
+                    return null;
+                }
+                return response;
+            } catch (error) {
+                console.error(`Fetch error on ${url}:`, error);
+                return null;
             }
-            return response;
         }
-
         login();
     </script>
 
